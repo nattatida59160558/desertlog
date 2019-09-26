@@ -28,7 +28,9 @@ import androidx.core.app.ShareCompat
 import androidx.databinding.DataBindingUtil
 import com.example.android.dessertclicker.databinding.ActivityMainBinding
 import timber.log.Timber
-
+const val KEY_REVENE = "revene_key"
+const val KEY_DESSER_SOLD = "sold_key"
+const val KEY_TIMER_SECOUNDS = "timer_secound_key"
 class MainActivity : AppCompatActivity() {
 
     private var revenue = 0
@@ -69,6 +71,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         dessertTimer = DessertTimer(this.lifecycle)
+        if (savedInstanceState !=null){
+            revenue = savedInstanceState.getInt(KEY_REVENE,0)
+            dessertsSold = savedInstanceState.getInt(KEY_DESSER_SOLD,0)
+            dessertTimer.secondsCount = savedInstanceState.getInt(KEY_TIMER_SECOUNDS,0)
+
+        showCurrentDessert()
+            Timber.i("revenue = ${savedInstanceState.getInt(KEY_REVENE,0)}")
+        }
         Timber.i("onCreate called")
 
         // Use Data Binding to get reference to the views
@@ -111,10 +121,6 @@ class MainActivity : AppCompatActivity() {
             if (dessertsSold >= dessert.startProductionAmount) {
                 newDessert = dessert
             }
-            // The list of desserts is sorted by startProductionAmount. As you sell more desserts,
-            // you'll start producing more expensive desserts as determined by startProductionAmount
-            // We know to break as soon as we see a dessert who's "startProductionAmount" is greater
-            // than the amount sold.
             else break
         }
 
@@ -172,6 +178,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
+        outState?.putInt(KEY_REVENE,revenue)
+        outState?.putInt(KEY_DESSER_SOLD,dessertsSold)
+        outState?.putInt(KEY_TIMER_SECOUNDS,dessertTimer.secondsCount)
         Timber.i("onSaveInstanceStateCall")
     }
 
